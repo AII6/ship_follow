@@ -4,8 +4,8 @@ from predict import predict
 
 socket_list = []
 s = socket.socket()
-# s.bind(('192.168.1.100', 30000))
-s.bind(('192.168.43.153', 30000))
+s.bind(('192.168.1.100', 30000))
+# s.bind(('192.168.43.153', 30000))
 s.listen()
 
 conn, addr = s.accept()
