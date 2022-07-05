@@ -16,6 +16,7 @@ from utils.utils import (cvtColor, get_anchors, get_classes, preprocess_input,
 from utils.utils_bbox import DecodeBox
 from mySerial import quit
 import socket
+
 '''
 训练自己的数据集必看注释！
 '''
@@ -109,8 +110,6 @@ class YOLO(object):
         self.generate()
 
         show_config(**self._defaults)
-        self.s = socket.socket()
-        self.s.connect(('192.168.1.103', 40000))
 
     # ---------------------------------------------------#
     #   生成模型
@@ -133,7 +132,7 @@ class YOLO(object):
     # ---------------------------------------------------#
     #   检测图片
     # ---------------------------------------------------#
-    def detect_image(self, image, ser, crop=False, count=False):
+    def detect_image(self, image, crop=False, count=False):
         # ---------------------------------------------------#
         #   计算输入图片的高和宽
         # ---------------------------------------------------#
@@ -168,7 +167,7 @@ class YOLO(object):
             results = self.bbox_util.non_max_suppression(torch.cat(outputs, 1), self.num_classes, self.input_shape,
                                                          image_shape, self.letterbox_image, conf_thres=self.confidence,
                                                          nms_thres=self.nms_iou)
-            # signal.signal(signal.SIGINT, quit)
+            signal.signal(signal.SIGINT, quit)
             if results[0] is None:
                 return image
 
@@ -231,7 +230,7 @@ class YOLO(object):
             label = label.encode('utf-8')
             print(label, top, left, bottom, right)
 
-# --------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
             # 判断向左还是向右
             # 1左，0右
             center = (left + right) / 2
@@ -242,11 +241,10 @@ class YOLO(object):
                 data = "00" + str(int(center)) + "\r\n"
             elif center < 100:
                 data = "0" + str(int(center)) + "\r\n"
-            sendDir(self.s, data)
-            a = ser.write(data.encode('gbk'))
+            sendDir(data)
             # ser.write("\r\n".encode('gbk'))
-            print("loc:"+data)
-            print(a)
+            print("loc:" + data)
+            # print(a)
 
             # time.sleep(0.02)
 
@@ -459,7 +457,7 @@ class YOLO(object):
                 continue
 
             f.write("%s %s %s %s %s %s\n" % (
-            predicted_class, score[:6], str(int(left)), str(int(top)), str(int(right)), str(int(bottom))))
+                predicted_class, score[:6], str(int(left)), str(int(top)), str(int(right)), str(int(bottom))))
 
         f.close()
         return

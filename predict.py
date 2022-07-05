@@ -3,14 +3,14 @@
 #   整合到了一个py文件中，通过指定mode进行模式的修改。
 # -----------------------------------------------------------------------#
 import time
-import serial
+import socket
 import cv2
 import numpy as np
 from PIL import Image
 import signal
 import sys
 from yolo import YOLO
-from mySerial import ser, quit
+from mySerial import quit
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
@@ -46,28 +46,6 @@ count = False
 video_path = 0
 video_save_path = "D:\\Python_Projects\\ship_competition\\new_video\\14.mp4"
 video_fps = 25.0
-# ----------------------------------------------------------------------------------------------------------#
-#   test_interval       用于指定测量fps的时候，图片检测的次数。理论上test_interval越大，fps越准确。
-#   fps_image_path      用于指定测试的fps图片
-#
-#   test_interval和fps_image_path仅在mode='fps'有效
-# ----------------------------------------------------------------------------------------------------------#
-test_interval = 100
-fps_image_path = "img/street.jpg"
-# -------------------------------------------------------------------------#
-#   dir_origin_path     指定了用于检测的图片的文件夹路径
-#   dir_save_path       指定了检测完图片的保存路径
-#
-#   dir_origin_path和dir_save_path仅在mode='dir_predict'时有效
-# -------------------------------------------------------------------------#
-dir_origin_path = "img/"
-dir_save_path = "img_out/"
-# -------------------------------------------------------------------------#
-#   heatmap_save_path   热力图的保存路径，默认保存在model_data下
-#
-#   heatmap_save_path仅在mode='heatmap'有效
-# -------------------------------------------------------------------------#
-heatmap_save_path = "model_data/heatmap_vision.png"
 # -------------------------------------------------------------------------#
 #   simplify            使用Simplify onnx
 #   onnx_save_path      指定了onnx的保存路径
@@ -96,7 +74,7 @@ def predict(image):
     # 转变成Image
     frame = Image.fromarray(np.uint8(frame))
     # 进行检测
-    frame = np.array(yolo.detect_image(frame, ser=ser))
+    frame = np.array(yolo.detect_image(frame))
     signal.signal(signal.SIGINT, quit)
     # RGBtoBGR满足opencv显示格式
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
