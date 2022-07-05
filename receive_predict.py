@@ -1,14 +1,11 @@
 import socket
-import threading
-import tkinter.scrolledtext
-from tkinter import *
-import cv2
 import numpy as np
 from predict import predict
 
 socket_list = []
 s = socket.socket()
-s.bind(('192.168.1.100', 30000))
+# s.bind(('192.168.1.100', 30000))
+s.bind(('192.168.43.153', 30000))
 s.listen()
 
 conn, addr = s.accept()
@@ -20,6 +17,7 @@ while True:
         a = conn.recv(921600-len(content))
         content += a
     if content is None:
+        print("break")
         break
     else:
         image = np.frombuffer(content, dtype='uint8')

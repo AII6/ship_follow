@@ -233,20 +233,18 @@ class YOLO(object):
 # ---------------------------------------------------------------------------------------
             # 判断向左还是向右
             # 1左，0右
-            center = (left + right) / 2
+            center = int((left + right) / 2)
             signal.signal(signal.SIGINT, quit)
             # 串口发送
-            data = str(int(center)) + "\r\n"
             if center < 10:
-                data = "00" + str(int(center)) + "\r\n"
+                data = np.array([0, 0, center], dtype='uint8')
             elif center < 100:
-                data = "0" + str(int(center)) + "\r\n"
+                data = np.array([0, center // 10, center % 10], dtype='uint8')
+            else:
+                data = np.array([center // 100, center // 10 % 10, center % 10], dtype='uint8')
             sendDir(data)
-            # ser.write("\r\n".encode('gbk'))
-            print("loc:" + data)
-            # print(a)
+            print("loc:" + str(data))
 
-            # time.sleep(0.02)
 
 # --------------------------------------------------------------------------------
 
